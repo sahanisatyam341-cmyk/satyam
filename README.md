@@ -27,7 +27,7 @@ satyam/
 ## Setup
 
 ```bash
-git clone https://github.com/<tera-username>/satyam.git
+git clone https://github.com/sahanisatyam341-cmyk/satyam.git
 cd satyam
 pip install -r requirements.txt
 cp .env.example .env
