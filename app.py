@@ -20,7 +20,7 @@ PROVIDERS = {
     "Groq": (
         "https://api.groq.com/openai/v1",
         "GROQ_API_KEY",
-        ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"],
+        ["openai/gpt-oss-120b", "openai/gpt-oss-20b"],
     ),
     "OpenRouter": (
         "https://openrouter.ai/api/v1",
