@@ -94,11 +94,12 @@ with st.sidebar:
     provider = st.selectbox("Provider", list(PROVIDERS.keys()), index=0)
     base_url, key_env, models = PROVIDERS[provider]
 
-    api_key = st.text_input(
-        f"API Key ({key_env})",
-        type="password",
-        value=os.getenv(key_env, ""),
-    )
+    # Server pe secret mein key ho toh usse box mein kabhi mat dikha (public link se leak ho jati hai)
+    api_key = os.getenv(key_env, "")
+    if api_key:
+        st.success(f"{provider} ki key set hai ✅")
+    else:
+        api_key = st.text_input(f"API Key ({key_env})", type="password")
     model = st.selectbox("Model", models, index=0)
     custom_model = st.text_input(
         "Ya apna model naam likh (optional)",
