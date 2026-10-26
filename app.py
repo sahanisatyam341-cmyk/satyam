@@ -171,8 +171,8 @@ def auth_screen():
                     )
                     st.session_state.user = res.user
                     st.rerun()
-                except Exception:
-                    st.error("Email ya password galat hai bhai 😅")
+                except Exception as e:
+                    st.error(f"Login nahi hua: {e}")
 
     with tab_signup:
         email = st.text_input("Email", key="su_email")
