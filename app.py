@@ -50,9 +50,11 @@ st.set_page_config(page_title="Satyam", page_icon="🤝", layout="centered")
 def secret(name, default=""):
     """Pehle Streamlit secrets, phir .env / environment se value uthata hai."""
     try:
-        return st.secrets[name]
+        val = st.secrets[name]
     except Exception:
-        return os.getenv(name, default)
+        val = os.getenv(name, default)
+    # extra space, line break ya quote hata deta hai
+    return str(val).strip().strip('"').strip("'").strip()
 
 
 def check_rate_limit():
@@ -157,6 +159,17 @@ def auth_screen():
     st.caption("Tera AI dost, jo seedha aur sahi jawab de")
     tab_login, tab_signup = st.tabs(["Login", "Signup"])
     sb = get_sb()
+
+    # Debug: key kaisi load hui (poori key nahi dikhata)
+    with st.expander("🔧 Key check (debug)"):
+        _u, _k = secret("SUPABASE_URL"), secret("SUPABASE_KEY")
+        st.write(f"URL: {_u}")
+        st.write(f"Key shuru: {_k[:15]}")
+        st.write(f"Key ant: {_k[-4:]}")
+        st.write(f"Key lambai: {len(_k)} akshar")
+        st.write(f"Key mein space: {'haan' if ' ' in _k else 'nahi'}")
+        st.write(f"Key mein '...': {'haan' if '...' in _k else 'nahi'}")
+        st.write(f"'publishable' kitni baar: {_k.count('publishable')}")
 
     with tab_login:
         email = st.text_input("Email", key="login_email")
