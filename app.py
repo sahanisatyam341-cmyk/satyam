@@ -53,8 +53,8 @@ def secret(name, default=""):
         val = st.secrets[name]
     except Exception:
         val = os.getenv(name, default)
-    # extra space, line break ya quote hata deta hai
-    return str(val).strip().strip('"').strip("'").strip()
+    # key ke andar ya aage-peeche ke saare space, line break aur quote hata deta hai
+    return "".join(str(val).split()).strip('"').strip("'")
 
 
 def check_rate_limit():
@@ -373,4 +373,3 @@ if raw_prompt := st.chat_input("Satyam se baat kar..."):
             except Exception as e:
                 st.error(f"Kuch gadbad ho gayi: {e}")
                 st.session_state.messages.pop()
-    
