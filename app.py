@@ -121,17 +121,28 @@ def get_sb():
     return st.session_state.sb
 
 
+# ---------- Chats / Messages (hamesha sirf apne user_id ka data) ----------
 def list_chats():
-    res = get_sb().table("chats").select("id,title").order("created_at", desc=True).execute()
+    uid = st.session_state.user.id
+    res = (
+        get_sb()
+        .table("chats")
+        .select("id,title")
+        .eq("user_id", uid)
+        .order("created_at", desc=True)
+        .execute()
+    )
     return res.data or []
 
 
 def load_messages(chat_id):
+    uid = st.session_state.user.id
     res = (
         get_sb()
         .table("messages")
         .select("role,content")
         .eq("chat_id", chat_id)
+        .eq("user_id", uid)
         .order("id")
         .execute()
     )
@@ -139,18 +150,21 @@ def load_messages(chat_id):
 
 
 def create_chat(title):
-    res = get_sb().table("chats").insert({"title": title[:40]}).execute()
+    uid = st.session_state.user.id
+    res = get_sb().table("chats").insert({"title": title[:40], "user_id": uid}).execute()
     return res.data[0]["id"]
 
 
 def save_messages(chat_id, rows):
+    uid = st.session_state.user.id
     get_sb().table("messages").insert(
-        [{"chat_id": chat_id, "role": r, "content": c} for r, c in rows]
+        [{"chat_id": chat_id, "role": r, "content": c, "user_id": uid} for r, c in rows]
     ).execute()
 
 
 def delete_chat(chat_id):
-    get_sb().table("chats").delete().eq("id", chat_id).execute()
+    uid = st.session_state.user.id
+    get_sb().table("chats").delete().eq("id", chat_id).eq("user_id", uid).execute()
 
 
 # ---------- Login / Signup ----------
@@ -159,17 +173,6 @@ def auth_screen():
     st.caption("Tera AI dost, jo seedha aur sahi jawab de")
     tab_login, tab_signup = st.tabs(["Login", "Signup"])
     sb = get_sb()
-
-    # Debug: key kaisi load hui (poori key nahi dikhata)
-    with st.expander("🔧 Key check (debug)"):
-        _u, _k = secret("SUPABASE_URL"), secret("SUPABASE_KEY")
-        st.write(f"URL: {_u}")
-        st.write(f"Key shuru: {_k[:15]}")
-        st.write(f"Key ant: {_k[-4:]}")
-        st.write(f"Key lambai: {len(_k)} akshar")
-        st.write(f"Key mein space: {'haan' if ' ' in _k else 'nahi'}")
-        st.write(f"Key mein '...': {'haan' if '...' in _k else 'nahi'}")
-        st.write(f"'publishable' kitni baar: {_k.count('publishable')}")
 
     with tab_login:
         email = st.text_input("Email", key="login_email")
@@ -373,3 +376,4 @@ if raw_prompt := st.chat_input("Satyam se baat kar..."):
             except Exception as e:
                 st.error(f"Kuch gadbad ho gayi: {e}")
                 st.session_state.messages.pop()
+    
